@@ -42,23 +42,6 @@ with engine.begin() as conn:
 
 
 
-# --------------------------
-# Connexion base SQLite
-# --------------------------
-conn = sqlite3.connect("evenementTEST.db", check_same_thread=False)
-cur = conn.cursor()
-
-cur.execute("""
-CREATE TABLE IF NOT EXISTS participations (
-    id INTEGER PRIMARY KEY,
-    mode TEXT,
-    distance REAL,
-    nbpassager INTEGER,        
-    impact REAL,
-    raison TEXT
-)
-""")
-conn.commit()
 
 # ---------------------------
 # Facteurs ADEME par km par passager
