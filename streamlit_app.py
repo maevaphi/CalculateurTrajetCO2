@@ -7,11 +7,13 @@ Created on Tu Dec 09  2025
 
 
 import streamlit as st
-import sqlite3
-from datetime import datetime
 import pandas as pd
 from sqlalchemy import create_engine, text
+from PIL import Image
 
+# -------------------------------
+# Connexion MySQL via SQLAlchemy
+# -------------------------------
 engine = create_engine(
     f"mysql+mysqlconnector://"
     f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
@@ -22,15 +24,18 @@ engine = create_engine(
 
 
 
+# -------------------------------
+# Créer la table si elle n'existe pas
+# -------------------------------
 with engine.begin() as conn:
     conn.execute(text("""
         CREATE TABLE IF NOT EXISTS participations (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            mode VARCHAR(100),
-            distance FLOAT,
-            nbpassager INT,
-            impact FLOAT,
-            raison TEXT,
+            mode VARCHAR(100) NOT NULL,
+            distance FLOAT NOT NULL,
+            nbpassager INT NOT NULL,
+            impact FLOAT NOT NULL,
+            raison TEXT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """))
