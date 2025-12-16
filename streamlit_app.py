@@ -74,7 +74,7 @@ st.header("➤ Je renseigne mon déplacement")
 mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
 distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
 if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Vélo à assistance électrique" or mode  == "Vélo mécanique":
-    nbpassager = st.number_input("Nombre de passagers (en plus du conducteur)", min_value=0.0, step=1.0)
+    nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)**", min_value=0.0, step=1.0)
 else:
     nbpassager = 0
 
@@ -161,9 +161,12 @@ st.image(img)
 
 with st.expander("Plus d'info sur le calcul"):
     st.write ("Les transports émettent 1/3 des gaz à effet de serre de la France.")
+
     st.write ("La bonne nouvelle, c’est que de nouvelles mobilités se dessinent, notamment avec le développement des pistes cyclables, du covoiturage, de l’autopartage..." \
     " Bouger davantage n’est pas seulement bon pour la santé mais cela permet aussi de réduire les émissions de gaz à effet de serre et les pollutions générées par les transports. ")
     st.write("La source des données à l'ADEME.")
+    st.write("Les facteurs d'émissions par km et par passager sont les suivants :")
+    FACTEURS
     st.link_button("Calculateur trajets de l'ADEME","https://agirpourlatransition.ademe.fr/particuliers/evaluer-son-impact/calculer-empreinte-carbone/calculer-emissions-carbone-trajets")
     st.write("Sont pris en compte : la fabrication, la maintenance, l'usage et la fin de vie des modes de transport." \
     "La construction des infrastructures (routes, rails, aéroports...) n'est pas incluse." \
