@@ -154,27 +154,27 @@ with st.form("impact_global"):
             st.subheader(f"📊 Impact moyen : **{impact_moyen:.2f} kg CO₂e/personne**")  
 
 
-if st.checkbox("📊 Afficher la base de données"):
-    engine = create_engine(
-                f"mysql+mysqlconnector://"
-                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
-                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
-                f"/{st.secrets['DB_NAME']}",
-                pool_pre_ping=True
-            )
-    df = pd.read_sql(
-        "SELECT * FROM participations ORDER BY created_at DESC",
-        engine
-    )
-    st.dataframe(df)
+#if st.checkbox("📊 Afficher la base de données"):
+#    engine = create_engine(
+#                f"mysql+mysqlconnector://"
+#                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
+#                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
+#                f"/{st.secrets['DB_NAME']}",
+#                pool_pre_ping=True
+#            )
+#    df = pd.read_sql(
+#        "SELECT * FROM participations ORDER BY created_at DESC",
+#        engine
+#    )
+#    st.dataframe(df)
 
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        "⬇️ Export CSV",
-        csv,
-        "participations.csv",
-        "text/csv"
-    )
+#    csv = df.to_csv(index=False).encode("utf-8")
+#    st.download_button(
+#        "⬇️ Export CSV",
+#        csv,
+#        "participations.csv",
+#        "text/csv"
+#    )
 
 
 
