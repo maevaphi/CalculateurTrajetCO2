@@ -62,9 +62,8 @@ st.header("➤ Je renseigne mon déplacement")
 with st.form("impact_presonnel"):
     mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
     distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
-    if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Vélo à assistance électrique" or mode  == "Vélo mécanique":
-        nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)**", min_value=0.0, step=1.0)
-    else:
+    nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)** Ne pas renseigner pour les transports en commun", min_value=0.0, step=1.0)
+    if mode == "Marche" or mode == "Tramway" or mode == "Bus GNV ou thermique" or mode == "Train (TER)":
         nbpassager = 0
 
     if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Scooter ou moto légère thermique":
@@ -149,6 +148,13 @@ with st.form("impact_global"):
 
 
 if st.checkbox("📊 Afficher la base de données"):
+    engine = create_engine(
+                f"mysql+mysqlconnector://"
+                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
+                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
+                f"/{st.secrets['DB_NAME']}",
+                pool_pre_ping=True
+            )
     df = pd.read_sql(
         "SELECT * FROM participations ORDER BY created_at DESC",
         engine
