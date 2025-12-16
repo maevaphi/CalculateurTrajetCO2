@@ -70,10 +70,10 @@ with st.form("impact_presonnel"):
     if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Scooter ou moto légère thermique":
         if nbpassager > 0 :
             st.write("Bravo pour le covoiturage !")
-        raison = st.text_input("Qu'est ce qui vous aiderait à adopter une mobilité douce ?")
-    else :
-        raison = ""
-        #manque calcul et affiche impact évité par rapport à une personne seule dans une voiture thermique
+
+    raison = st.text_input("Qu'est ce qui vous aiderait à adopter une mobilité douce, si ce n'est pas déjà le cas ?")    
+    
+    #manque calcul et affiche impact évité par rapport à une personne seule dans une voiture thermique
 
 
     if st.form_submit_button("Valider ma participation"):
