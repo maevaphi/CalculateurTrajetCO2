@@ -11,34 +11,22 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from PIL import Image
 
-# -------------------------------
-# Connexion MySQL via SQLAlchemy
-# -------------------------------
-engine = create_engine(
-    f"mysql+mysqlconnector://"
-    f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
-    f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
-    f"/{st.secrets['DB_NAME']}",
-    pool_pre_ping=True
-)
-
-
 
 # -------------------------------
 # Créer la table si elle n'existe pas
 # -------------------------------
-with engine.begin() as conn:
-    conn.execute(text("""
-        CREATE TABLE IF NOT EXISTS participations (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            mode VARCHAR(100) NOT NULL,
-            distance FLOAT NOT NULL,
-            nbpassager INT NOT NULL,
-            impact FLOAT NOT NULL,
-            raison TEXT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """))
+#with engine.begin() as conn:
+#    conn.execute(text("""
+#        CREATE TABLE IF NOT EXISTS participations (
+#            id INT AUTO_INCREMENT PRIMARY KEY,
+#            mode VARCHAR(100) NOT NULL,
+#            distance FLOAT NOT NULL,
+#            nbpassager INT NOT NULL,
+#            impact FLOAT NOT NULL,
+#            raison TEXT NULL,
+#            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+#        )
+#    """))
 
 
 
@@ -66,77 +54,98 @@ FACTEURS = {
 # ---------------------------
 
 st.title("🌿 Calculateur CO₂ — Événement")
-#ajouter logo Amis des Sheds
+img = Image.open("logoLong_lesAmiesDesSheds_colvert.png")
+st.image(img)
 st.header("➤ Je renseigne mon déplacement")
 
 #et si plusieurs modes de transport?
-
-mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
-distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
-if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Vélo à assistance électrique" or mode  == "Vélo mécanique":
-    nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)**", min_value=0.0, step=1.0)
-else:
-    nbpassager = 0
-
-if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Scooter ou moto légère thermique":
-    if nbpassager > 0 :
-        st.write("Bravo pour le covoiturage !")
-    raison = st.text_input("Qu'est ce qui vous aiderait à adopter une mobilité douce ?")
-else :
-    raison = ""
-    #manque calcul et affiche impact évité par rapport à une personne seule dans une voiture thermique
-
-if st.button("Valider ma participation"):
-    if distance <= 0:
-        st.error("Merci de rentrer la distance parcourue en km.")
+with st.form("impact_presonnel"):
+    mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
+    distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
+    if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Vélo à assistance électrique" or mode  == "Vélo mécanique":
+        nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)**", min_value=0.0, step=1.0)
     else:
-        impact = distance * FACTEURS[mode] / (nbpassager + 1)
-        with engine.begin() as conn:
-            conn.execute(
-                text("""
-                    INSERT INTO participations
-                    (mode, distance, nbpassager, impact, raison)
-                    VALUES (:mode, :distance, :nbpassager, :impact, :raison)
-                """),
-                {
-                    "mode": mode,
-                    "distance": distance,
-                    "nbpassager": nbpassager,
-                    "impact": impact,
-                    "raison": raison
-                }
+        nbpassager = 0
+
+    if mode == "Voiture thermique" or mode == "Moto thermique" or mode == "Voiture électrique" or mode == "Scooter ou moto légère thermique":
+        if nbpassager > 0 :
+            st.write("Bravo pour le covoiturage !")
+        raison = st.text_input("Qu'est ce qui vous aiderait à adopter une mobilité douce ?")
+    else :
+        raison = ""
+        #manque calcul et affiche impact évité par rapport à une personne seule dans une voiture thermique
+
+
+    if st.form_submit_button("Valider ma participation"):
+        if distance <= 0:
+            st.error("Merci de rentrer la distance parcourue en km.")
+        else:
+            impact = distance * FACTEURS[mode] / (nbpassager + 1)
+            # -------------------------------
+            # Connexion MySQL via SQLAlchemy
+            # -------------------------------
+            engine = create_engine(
+                f"mysql+mysqlconnector://"
+                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
+                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
+                f"/{st.secrets['DB_NAME']}",
+                pool_pre_ping=True
             )
-        st.success(f"Merci ! Votre impact : **{impact:.2f} kg CO₂e/personne**")
-        if mode == "Marche" or mode == "Vélo mécanique" or mode == "Tramway" or mode == "Vélo à assistance électrique" or mode =="Trottinette à assistance électrique":
-            st.balloons ()
-            st.success("Bravo pour votre choix de mobilité douce !")
+            with engine.begin() as conn:
+                conn.execute(
+                    text("""
+                        INSERT INTO participations
+                        (mode, distance, nbpassager, impact, raison)
+                        VALUES (:mode, :distance, :nbpassager, :impact, :raison)
+                    """),
+                    {
+                        "mode": mode,
+                        "distance": distance,
+                        "nbpassager": nbpassager,
+                        "impact": impact,
+                        "raison": raison
+                    }
+                )
+            st.success(f"Merci ! Votre impact : **{impact:.2f} kg CO₂e/personne**")
+            if mode == "Marche" or mode == "Vélo mécanique" or mode == "Tramway" or mode == "Vélo à assistance électrique" or mode =="Trottinette à assistance électrique":
+                st.balloons ()
+                st.success("Bravo pour votre choix de mobilité douce !")
     
 
+# ---------------------------
 #calcule et affiche l'impact de l'évènemnet par personne
-
+# ---------------------------
 st.header("📘 Impact global de l'événement")
 
+with st.form("impact_global"):
+    if st.form_submit_button("Afficher l'impact global de l'événement"):
+        engine = create_engine(
+                f"mysql+mysqlconnector://"
+                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
+                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
+                f"/{st.secrets['DB_NAME']}",
+                pool_pre_ping=True
+            )
+        with engine.connect() as conn:
+            rows = conn.execute(
+                text("SELECT impact, nbpassager FROM participations")
+            ).fetchall()
 
-with engine.connect() as conn:
-    rows = conn.execute(
-        text("SELECT impact, nbpassager FROM participations")
-    ).fetchall()
+        if not rows:
+            st.info("Aucune participation enregistrée.")
+        else:
+            total_impact = 0
+            total_personnes = 0
 
-if not rows:
-    st.info("Aucune participation enregistrée.")
-else:
-    total_impact = 0
-    total_personnes = 0
+            for impact, nbpassager in rows:
+                total_impact += impact
+                total_personnes += (1 + nbpassager)
+        
+            impact_moyen = total_impact / total_personnes
 
-    for impact, nbpassager in rows:
-        total_impact += impact
-        total_personnes += (1 + nbpassager)
-
-    impact_moyen = total_impact / total_personnes
-
-    st.subheader(f"🌍 Impact total : **{total_impact:.2f} kg CO₂e**")
-    st.subheader(f"👥 Nombre de participants : **{total_personnes}**")
-    st.subheader(f"📊 Impact moyen : **{impact_moyen:.2f} kg CO₂e/personne**")  
+            st.subheader(f"🌍 Impact total : **{total_impact:.2f} kg CO₂e**")
+            st.subheader(f"👥 Nombre de participants : **{total_personnes}**")
+            st.subheader(f"📊 Impact moyen : **{impact_moyen:.2f} kg CO₂e/personne**")  
 
 
 if st.checkbox("📊 Afficher la base de données"):
@@ -156,8 +165,7 @@ if st.checkbox("📊 Afficher la base de données"):
 
 
 
-img = Image.open("logoLong_lesAmiesDesSheds_colvert.png")
-st.image(img)
+
 
 with st.expander("Plus d'info sur le calcul"):
     st.write ("Les transports émettent 1/3 des gaz à effet de serre de la France.")
