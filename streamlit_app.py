@@ -187,7 +187,8 @@ with st.expander("Plus d'info sur le calcul"):
     " Bouger davantage n’est pas seulement bon pour la santé mais cela permet aussi de réduire les émissions de gaz à effet de serre et les pollutions générées par les transports. ")
     st.write("La source des données à l'ADEME.")
     st.write("Les facteurs d'émissions par km et par passager sont les suivants :")
-    FACTEURS
+    img_FE = Image.open("FacteursEmissions.png")
+    st.image(img_FE)
     st.link_button("Calculateur trajets de l'ADEME","https://agirpourlatransition.ademe.fr/particuliers/evaluer-son-impact/calculer-empreinte-carbone/calculer-emissions-carbone-trajets")
     st.write("Sont pris en compte : la fabrication, la maintenance, l'usage et la fin de vie des modes de transport." \
     "La construction des infrastructures (routes, rails, aéroports...) n'est pas incluse." \
