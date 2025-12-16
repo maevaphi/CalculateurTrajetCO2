@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 from sqlalchemy import create_engine, text
 from PIL import Image
+from datetime import date
 
 
 # -------------------------------
@@ -62,7 +63,7 @@ st.header("➤ Je renseigne mon déplacement")
 with st.form("impact_presonnel"):
     mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
     distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
-    nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)** Ne pas renseigner pour les transports en commun", min_value=0.0, step=1.0)
+    nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)** Ne pas renseigner pour les transports en commun !", min_value=0.0, step=1.0)
     if mode == "Marche" or mode == "Tramway" or mode == "Bus GNV ou thermique" or mode == "Train (TER)":
         nbpassager = 0
 
@@ -118,6 +119,7 @@ st.header("📘 Impact global de l'événement")
 
 with st.form("impact_global"):
     if st.form_submit_button("Afficher l'impact global de l'événement"):
+        today = date.today()
         engine = create_engine(
                 f"mysql+mysqlconnector://"
                 f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
@@ -127,7 +129,12 @@ with st.form("impact_global"):
             )
         with engine.connect() as conn:
             rows = conn.execute(
-                text("SELECT impact, nbpassager FROM participations")
+                text("""
+                    SELECT impact, nbpassager
+                    FROM participations
+                    WHERE DATE(created_at) = :today
+                """),
+                {"today": today}
             ).fetchall()
 
         if not rows:
