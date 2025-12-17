@@ -63,7 +63,7 @@ st.header("➤ Je renseigne mon déplacement")
 with st.form("impact_presonnel"):
     mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
     distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
-    nbpassager = st.number_input("Nombre de passagers **(en plus du conducteur)** Ne pas renseigner pour les transports en commun !", min_value=0.0, step=1.0)
+    nbpassager = st.number_input("Nombre de passagers :[**(en plus du conducteur)**] Ne pas renseigner pour les transports en commun !", min_value=0.0, step=1.0)
     if mode == "Marche" or mode == "Tramway" or mode == "Bus GNV ou thermique" or mode == "Train (TER)":
         nbpassager = 0
 
@@ -71,7 +71,7 @@ with st.form("impact_presonnel"):
         if nbpassager > 0 :
             st.write("Bravo pour le covoiturage !")
 
-    raison = st.text_input("Qu'est ce qui vous aiderait à adopter une mobilité douce, si ce n'est pas déjà le cas ?")    
+    raison = st.text_input("Qu'est ce qui vous aiderait à adopter une mobilité douce (marche, vélo, transport en commun), si ce n'est pas déjà le cas ?")    
     
     #manque calcul et affiche impact évité par rapport à une personne seule dans une voiture thermique
 
@@ -138,7 +138,7 @@ with st.form("impact_global"):
             ).fetchall()
 
         if not rows:
-            st.info("Aucune participation enregistrée.")
+            st.info("Aucune participation enregistrée aujourd'hui.")
         else:
             total_impact = 0
             total_personnes = 0
