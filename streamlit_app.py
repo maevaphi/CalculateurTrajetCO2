@@ -63,7 +63,7 @@ st.header("➤ Je renseigne mon déplacement")
 with st.form("impact_presonnel"):
     mode = st.selectbox("Mode de transport", list(FACTEURS.keys()))
     distance = st.number_input("Distance parcourue (en km)", min_value=0.0, step=0.1)
-    nbpassager = st.number_input("Nombre de passagers :[**(en plus du conducteur)**] Ne pas renseigner pour les transports en commun !", min_value=0.0, step=1.0)
+    nbpassager = st.number_input("Dans/sur le véhicule, :red[**en plus du conducteur**], il y avait combien de passagers ? Ne pas renseigner pour les transports en commun !", min_value=0.0, step=1.0)
     if mode == "Marche" or mode == "Tramway" or mode == "Bus GNV ou thermique" or mode == "Train (TER)":
         nbpassager = 0
 
