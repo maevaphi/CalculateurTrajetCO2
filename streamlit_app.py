@@ -137,33 +137,6 @@ with st.form("impact_global"):
 
 
 
-
-
-if st.checkbox("📊 Afficher la base de données"):
-    engine = create_engine(
-                f"mysql+mysqlconnector://"
-                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
-                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
-                f"/{st.secrets['DB_NAME']}",
-                pool_pre_ping=True
-            )
-    df = pd.read_sql(
-        "SELECT * FROM participations ORDER BY created_at DESC",
-        engine
-    )
-    st.dataframe(df)
-
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        "⬇️ Export CSV",
-        csv,
-        "participations.csv",
-        "text/csv"
-    )
-
-
-
-
 with st.expander("Plus d'info sur le calcul"):
     st.write ("Les transports émettent 1/3 des gaz à effet de serre de la France.")
 
