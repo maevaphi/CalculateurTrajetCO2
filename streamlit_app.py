@@ -135,7 +135,7 @@ with st.form("impact_global"):
             st.subheader(f"👥 Nombre de participants : **{total_personnes}**")
             st.subheader(f"📊 Impact moyen : **{impact_moyen:.2f} kg CO₂e/personne**")  
 
-
+#affichage impact des évènments précédents?
 
 with st.expander("Plus d'info sur le calcul"):
     st.write ("Les transports émettent 1/3 des gaz à effet de serre de la France.")
