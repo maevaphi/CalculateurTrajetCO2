@@ -13,24 +13,6 @@ from PIL import Image
 from datetime import date
 
 
-# -------------------------------
-# Créer la table si elle n'existe pas
-# -------------------------------
-#with engine.begin() as conn:
-#    conn.execute(text("""
-#        CREATE TABLE IF NOT EXISTS participations (
-#            id INT AUTO_INCREMENT PRIMARY KEY,
-#            mode VARCHAR(100) NOT NULL,
-#            distance FLOAT NOT NULL,
-#            nbpassager INT NOT NULL,
-#            impact FLOAT NOT NULL,
-#            raison TEXT NULL,
-#            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-#        )
-#    """))
-
-
-
 
 # ---------------------------
 # Facteurs ADEME par km par passager
@@ -54,7 +36,7 @@ FACTEURS = {
 #Interface
 # ---------------------------
 
-st.title("🌿 Calculateur CO₂ — Événement")
+st.title("🌿 Calculateur CO₂ — Évènement")
 img = Image.open("logoLong_lesAmiesDesSheds_colvert.png")
 st.image(img)
 st.header("➤ Je renseigne mon déplacement")
@@ -115,7 +97,7 @@ with st.form("impact_presonnel"):
 # ---------------------------
 #calcule et affiche l'impact de l'évènemnet par personne
 # ---------------------------
-st.header("📘 Impact global de l'événement")
+st.header("📘 Impact global de l'évènement")
 
 with st.form("impact_global"):
     if st.form_submit_button("Afficher l'impact global de l'événement"):
@@ -154,28 +136,30 @@ with st.form("impact_global"):
             st.subheader(f"📊 Impact moyen : **{impact_moyen:.2f} kg CO₂e/personne**")  
 
 
-#if st.checkbox("📊 Afficher la base de données"):
-#    engine = create_engine(
-#                f"mysql+mysqlconnector://"
-#                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
-#                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
-#                f"/{st.secrets['DB_NAME']}",
-#                pool_pre_ping=True
-#            )
-#    df = pd.read_sql(
-#        "SELECT * FROM participations ORDER BY created_at DESC",
-#        engine
-#    )
-#    st.dataframe(df)
 
-#    csv = df.to_csv(index=False).encode("utf-8")
-#    st.download_button(
-#        "⬇️ Export CSV",
-#        csv,
-#        "participations.csv",
-#        "text/csv"
-#    )
 
+
+if st.checkbox("📊 Afficher la base de données"):
+    engine = create_engine(
+                f"mysql+mysqlconnector://"
+                f"{st.secrets['DB_USER']}:{st.secrets['DB_PASSWORD']}"
+                f"@{st.secrets['DB_HOST']}:{st.secrets['DB_PORT']}"
+                f"/{st.secrets['DB_NAME']}",
+                pool_pre_ping=True
+            )
+    df = pd.read_sql(
+        "SELECT * FROM participations ORDER BY created_at DESC",
+        engine
+    )
+    st.dataframe(df)
+
+    csv = df.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        "⬇️ Export CSV",
+        csv,
+        "participations.csv",
+        "text/csv"
+    )
 
 
 
